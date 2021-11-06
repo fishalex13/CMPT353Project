@@ -1,0 +1,23 @@
+version: '3'
+services:
+
+ projectnode: 
+  stdin_open: true
+  tty: true
+  build: ./
+  depends_on:
+   - mysql
+  container_name: projectnode
+  ports:
+   - "80:8080"
+  volumes:
+   - C:\Users\Lee\CMPT353\Project:/project
+
+ mysql:
+  image: mysql:5.7.31
+  container_name: db1
+  ports:
+   - "3306:3306"
+  environment:
+   MYSQL_ROOT_PASSWORD: admin
+   MYSQL_DATABASE: project

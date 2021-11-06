@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>
+            Project Part A - Main Screen
+        </title>
+    </head>
+
+    <script type = "text/javascript">
+        function addStaff(){
+            let newStaffName = document.getElementById("newStaffName").value;
+            let newStaffPhoneNumber = document.getElementById("newStaffContact").value;
+            // consider adding some kind of input validation, checking if these values are empty etc
+            addPerson(newStaffName, newStaffPhoneNumber, "staff");
+        }
+            
+        function addStudent(){
+            let newStudentName = document.getElementById("newStudentName").value;
+            let newStudentPhoneNumber = document.getElementById("newStudentContact").value;
+            addPerson(newStudentName, newStudentPhoneNumber, "students");
+        }
+
+        function addPerson(name, phoneNumber, personType){
+            let http = new XMLHttpRequest();
+            let url = "/";
+            // include an '&' between the topic and data fields to delimit these fields
+            let params = "name=" + name + "&phoneNumber=" + phoneNumber + "&personType=" + personType;
+            http.open('POST', url, true);
+
+            http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+            http.onreadystatechange = ()=>{ 
+                if(http.readyState == 4 && http.status == 200) {  
+                    // our http request was successful, get our response from the server 
+                    let response = http.responseText;
+                    // display our response as an alert so the user can see if they're data was 
+                    // submitted successfully
+                    alert(response);
+                }
+            };
+            // send our input data
+            http.send(params);
+        }
+
+        function displayStaffAndStudents(){
+            let http = new XMLHttpRequest();
+            let url = "/getPersonData";
+            http.open("GET", url, true);
+
+            http.onreadystatechange = ()=>{ 
+                if(http.readyState == 4 && http.status == 200) {  
+                    // our http request was successful, get our response from the server 
+                    let response = http.responseText;
+                    // our response will be a json string, parse this
+                    let responseData = JSON.parse(response);
+                    // get data specifically for our staff and students from this json object
+                    let staffData = responseData.staffResult;
+                    let studentData = responseData.studentsResult;
+                    // staff and student data are now arrays of json objects, go through each 
+                    // staff and student and display each one
+                    let staffList = document.getElementById("staffList");
+                    // add each staff member we've retrieved from staffData to the inner html of
+                    // our stafflist
+                    // initialize a string of html to be the new list of staff members
+                    let staffListString = "";
+                    for(let staff of staffData){
+                        // get the name of each staff member
+                        let staffName = staff.name;
+                        let newStaffHTML = `<option value='${staffName}'>${staffName}</option>`
+                        // append the html for this new staff member to our string of staff
+                        staffListString = staffListString + newStaffHTML;
+                    }
+                    // after processing each staff member, add this resulting new staff string 
+                    // to our staffList's inner html
+                    staffList.innerHTML = staffListString;
+
+                    // do this same process for students
+                    let studentList = document.getElementById("studentList");
+                    let studentListString = "";
+                    for(let student of studentData){
+                        let studentName = student.name;
+                        let studentPhoneNumber = student.phoneNumber;
+                        // include as part of the url of each a tag, a query that lists the name
+                        // of the selected student
+                        let newStudentHTML = `<a href='/partA_student.html?name=${studentName}'>${studentName}, ${studentPhoneNumber}</a><br>`;
+                        studentListString = studentListString + newStudentHTML;
+                    }
+                    studentList.innerHTML = studentListString;
+                }
+            }
+            http.send();
+
+            // recursively call ourself to continuously read data
+            setTimeout(displayStaffAndStudents, 1000);
+        }
+
+        function initialize(){
+            // start reading data for both staff and students
+            setTimeout(displayStaffAndStudents, 0);
+        }
+    </script>
+    <body onload="initialize()">
+
+        <div style = "text-align: center">
+        
+            <h1>Saskatoon Community Learning</h1>
+            <br>
+            <div style="display:block; width:100%;">
+                <div style="width:50%; float: left;">
+                    <label id = "staff">Staff:</label>
+                    <br>
+                    <br>
+                    <select name="staffList" id="staffList" size = "10" style="width: 210px">
+                    </select>
+                    <br>
+                    <br>
+                    <button id = "editStaff">Edit Staff Member</button>
+                    <br>
+                    <br>
+                    <label>Add New Staff Member:</label>
+                    <br>
+                    <br>
+                    <label for = "newStaffName">Name:</label>
+                    <input id = "newStaffName" type="text" name="newStaffName">
+                    <br>
+                    <br>
+                    <label for = "newStaffContact">Phone #:</label>
+                    <input id = "newStaffContact" type="text" name="newStaffContact">
+                    <br>
+                    <br>
+                    <button id = "addStaff" onclick="addStaff()">Add to Staff</button>
+                </div>
+                <div style="width:50%; float: left; text-align: center">
+                    <label id = "students">Students:</label>
+                    <br>
+                    <br>
+                    <div name="studentList" id="studentList" size = "10" style="width: 100%">
+                    </div>
+                    <br>
+                    <br>
+                    <button id = "editStudent">Edit Student / Add Report</button>
+                    <br>
+                    <br>
+                    <label>Add New Student:</label>
+                    <br>
+                    <br>
+                    <label for = "newStudentName">Name:</label>
+                    <input id = "newStudentName" type="text" name="newStudentName">
+                    <br>
+                    <br>
+                    <label for = "newStudentContact">Phone #:</label>
+                    <input id = "newStudentContact" type="text" name="newStudentContact">
+                    <br>
+                    <br>
+                    <button id = "addStudent" onclick="addStudent()">Add to Students</button>
+                </div>
+            </div>
+
+        </div>
+        
+        <script>
+        </script>
+    </body>
+</html>

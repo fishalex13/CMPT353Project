@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>
+            Project Part A - Edit Student
+        </title>
+    </head>
+
+    <script type = "text/javascript">
+        function getStudent(){
+            // on this page, we should have a query in the url listing the name of the 
+            // current student
+            let urlQuery = window.location.search;
+            let urlData = new URLSearchParams(urlQuery);
+            let currentStudentName = urlData.get("name");
+            console.log(currentStudentName);
+            // request information about this user from the server
+            let http = new XMLHttpRequest();
+            let url = `/getStudent/${currentStudentName}`;
+            http.open("GET", url, true);
+
+            http.onreadystatechange = ()=>{ 
+                if(http.readyState == 4 && http.status == 200) {
+
+                }
+            }
+            http.send();
+
+        }
+    </script>
+    <body onload="getStudent()">
+
+        <div style = "text-align: center">
+        
+            <h1>Edit Student / Add Report</h1>
+            <br>
+            <label for = "editStudentName">Name:</label>
+            <input id = "editStudentName" type="text" name="editStudentName">
+            <br>
+            <br>
+            <label for = "editStudentContact">Phone #:</label>
+            <input id = "editStudentContact" type="text" name="editStudentContact">
+            <br>
+            <br>
+            <button id = "updateStudent">Update Student Info</button>
+            <br>
+            <br>
+            <button id = "deleteStudent">Delete Student</button>
+            <br>
+            <br>
+            <br>
+            <label for = "oldReports">Reports:</label>
+            <br>
+            <textarea name="oldReports" id="oldReports" cols="60" rows="30"></textarea>
+            <br>
+            <br>
+            <label for = "newReport">Add Report:</label>
+            <br>
+            <textarea name="newReport" id="newReport" cols="60" rows="20"></textarea>
+            <br>
+            <br>
+            <button id = "addReport">Add Report</button>
+        </div>
+        
+        <script>
+        </script>
+    </body>
+</html>
